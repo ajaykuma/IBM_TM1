@@ -1,0 +1,68 @@
+6# For exiting Dimension TDTimeDim1 > edit Hierarchy TDTimeDim1 and members to contain 2024 (Parent) and 
+add 
+Q1 2024
+Q2 2024
+Q3 2024
+Q4 2024 as child.
+We can further add months too..
+
+once done, check in view if new timelines reflect.
+
+----------------------------
+7# Creating 
+Select TVDView1 (stored in shared location) > duplicate it and
+now we have two copies of data.
+
+--select 2 copy of view > exploration > line chart
+
+in first copy of view, we see Total regions which belongs to TDSalesRepDim1 dimension.
+Drag it on to the canvas.
+
+Now we want to synchronize, ie as we select a particular sales rep it automatically changes visuals or views accordingly.
+So for each widget, we can click on top right corner > properties and synchronize..
+
+synchronization group : sheet
+>save the book
+
+-------------------------------
+8# open the book and 
+select the view > select both dimensions (sales and calculated_comm)
+> calculation option > calculated_comm is what % of Sales > add a column
+--duplicate this for new visual
+--choose bar and line
+
+click on fields option>
+Time dimension is on x-axis
+
+#for column length
+choose 
+Sales and % Of
+
+on x > edit this set and since 2024 has no data ,we can collapse 2024 or remove it.
+now we can view the chart.
+
+--lets do the synchronize option too..
+synchronization group : new book
+
+-----------------------------
+9# Dimension: TDProductDim1 > Products
+              TDCountriesDim1 > Countries
+              TDSampleMeasuresDim1 > Quantity (numeric),Months Introduced (string)
+
+use file quantitydata nd create cube..and check
+
+we need to create a subset (public)
+TD2023Dim1 > 2023 > roles into months
+
+now remove the level000 or create a subset using only months.
+
+now add this to your attributes for TDSampleMeasuresDim1
+
+
+subset:<dimname>:<levelname>
+
+
+
+
+
+

@@ -1,0 +1,282 @@
+IBM Planning Analytics workspace
+-------------
+Applications and Plans
+Reports and analysis
+Data and models
+Administration
+
+Applications and Plans
+--organize content
+--assign logos
+--dues dates
+--corresponding users and groups
+
+Reports and Analysis
+--user content is presented in list view
+--sorting functionality (for Shared, Personal, Favorites, Recents)
+--we can access content within the book
+
+Data and Models
+--to create your books, models, cubes
+
+--------------------------------------------
+
+1# Adding a Dimension
+TDDim1
+--Create a new book > Book1
+
+--Under existing database : BusinessFlow
+ 
+--Create Dimension
+In the Tree pane of the Server Explorer, select Dimensions beneath the server that you want to contain the dimension.
+Click Dimensions, Create New Dimension > TDDim1 > Dimension Editor opens
+
+we can now start adding members here. 
+[Start by adding members
+Add members manually by clicking "Add root member" or import members from a file. Ctrl+V to paste members.]
+
+Close the editor and from list of dimensions under Dimensions tile, search for your dimension.
+We can click and expand it and it shows a hierarchy by name 'TestDimension'.
+we can optionally save our default hierarchy as a different name and delete it.
+
+You can now add elements to the dimension.
+Let's delete our TDDim1 and check.
+
+Now create a new dimension - TDDim11
+--shows a default TDDim11 (hierarchy) created.
+Here we can add members, attributes of members
+
+By selecting 'Add root member'
+To add a consolidated element, do the following:
+Germany, Type: Consolidated, Commit [we will add weights later]
+
+Germany now appears as the first element of the dimension, which is a consolidated element. 
+Now let's add three child elements to the Germany element. As a result, Germany becomes the parent element of the three child elements.
+
+Click on Germany and add members(as child) to it 
+
+Select the Germany element.
+Click Edit, Insert Child or click Insert Child Insert Child button..
+The Dimension Element Insert dialog box opens. TM1 displays a Parent name of Germany, indicating that any elements you create will be the children 
+
+In the Insert Element Name field, type Frankfurt and click Add.
+In the Insert Element Name field, type Berlin and click Add.
+In the Insert Element Name field, type Munich and click <commit>
+The dialog box now contains three children of Germany, each with a default weight of 1.
+
+Click OK.
+The Dimension Editor shows the new elements as children of Germany.
+
+Click Dimension, Save or click Save Save button..
+The Dimension Save As dialog box opens.
+
+Enter a dimension name and click Save.
+Dimension names can have a maximum of 256 characters. Always use descriptive dimension names.
+
+The new dimension displays in the list of dimensions on the server.
+
+Explore..
+
+-----------------
+--using wizard
+2# Working with Time Dimension
+TDTimeDim1
+
+Start Year: 2023
+End Year: 2024
+How frequently plan : Monthly
+
+So preview shows months rolling into Qtr and Qtrs rolling into year.
+It also creates a default hierarchy with same name as Dimension.
+We can additionally created one more hierarchy.[optional]
+Now lets delete 2024 from members list.
+select 2024 from members and delete from dimension.
+we would still see qtrs. for 2024,so lets delete them too.
+we would still months for 2024 as members and we can delete them too. (select multiple members and delete)
+
+<save your book>
+
+Note when we look in our dimension now, we would see
+TDTimeDim1(Dimension)
+  TDTimeDim1 (Hierarchy)
+    Sets(Not defined)
+    Levels(level000-Year)
+	  (level001-Qtr)
+          (level002-Months)
+    Members (17 members)
+--we don't see any leaflevels option or any other hierarchy (unless added)
+
+in Dimension editor for our newly created dimension > 
+Members
+Attributes
+--shows built in attributes for us to do references
+  First and last values for year and quarter.
+  Previous and next period to be able to perform rolling or trailing approach.
+  Descriptions, Aliases, Short names or long names
+  --we can also click on add attributes and add new ones as per our needs.
+
+---------------------------------
+--using file
+#3 Create one more dimension: TDSalesRepDim1
+
+Drag or upload file > alesrep.csv > next
+Preview file shows us details of content from file > next
+
+Imports : Leaf only or Structure using Parent-child (selected)
+in data source mapping
+Parent: Region
+Child:  Element
+Add new attribute : Fullname (type: alias) : Alias (for mapping)
+<import>
+
+Now look into your Dimension and its members and attributes
+
+--------------------------------------
+--manually
+#4 Create dimension: TDSalesMsrDim1
+Add root member
+  Sales
+  Commission
+<optionally we can set formatting by right click > format > say comma
+--check attributes
+
+-----------------------------------
+5# Creating cubes : TCDCube1
+--import salesdata.csv
+--preview data
+
+<next>
+using our previously created dimensions
+Mapping     Cube dimensions     Parent        Child
+Dimension   TDSalesRepDim1                    SalesRep
+Dimension   TDTimeDim1                        Period
+Dimension   TDSalesMsrDim1                    Measure
+            Data   <numeric>                  Value
+
+<import>
+--if it complains on a key,check the data and key defined.
+A view gets created which shows us data for sales.
+
+Now we can create a view on this cube & check.
+--we can save view as (in personal or shared) or save in database (TVDView1)
+
+we can have view selected and then click on MDX to see the expression
+
+SELECT 
+   {
+      [TDSalesMsrDim1].[TDSalesMsrDim1].MEMBERS
+   } ON 0, 
+   {
+      [TDTimeDim1].[TDTimeDim1].MEMBERS
+   } ON 1 
+FROM
+   [TCDCube1] 
+WHERE (
+   [TDSalesRepDim1].[TDSalesRepDim1].[Total Regions])
+
+Finally we also want to calculate commissions.
+we can click on Sales column in view, calculation operations
+column name: calculated_comm
+sales * 0.25
+
+--we can hide our initially added member 'Commmision'.[optional]
+
+--we could also use MDX editor
+WITH 
+   MEMBER [TDSalesMsrDim1].[TDSalesMsrDim1].[calculated_comm] AS [TDSalesMsrDim1].[TDSalesMsrDim1].[Sales]*0.25, SOLVE_ORDER = 1, FORMAT_STRING = '#,##0.00;(#,##0.00)' 
+SELECT 
+   {
+      GENERATE(
+         {
+            [TDSalesMsrDim1].[TDSalesMsrDim1].MEMBERS
+         }, 
+         {
+            StrToSet(CASE WHEN 
+               [TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER.PROPERTIES("MEMBER_NAME") = "Sales" THEN "{[TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER, [TDSalesMsrDim1].[TDSalesMsrDim1].[calculated_comm]}" ELSE "{[TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER}" END)
+         }, ALL)
+   } ON 0, 
+   {
+      [TDTimeDim1].[TDTimeDim1].MEMBERS
+   } ON 1 
+FROM
+   [TCDCube1] 
+WHERE (
+   [TDSalesRepDim1].[TDSalesRepDim1].[Total Regions])
+
+--we can editing or use functions as needed..
+
+------------------------
+6# we can select multiple columns and add more calculations..
+
+for example: select > and select both columns > calculation options
+and add 'avg'
+and check the mdx..
+
+now manually select sales,calculated_comms and click on calculation options
+and add 
+name: prof_sales_wcomms
+Arithmetic: sales-calculated_comm
+
+MDX shows..
+WITH 
+   MEMBER [TDSalesMsrDim1].[TDSalesMsrDim1].[calculated_comm] AS [TDSalesMsrDim1].[TDSalesMsrDim1].[Sales] * 0.25, SOLVE_ORDER = 1, FORMAT_STRING = '#,##0.00;(#,##0.00)' 
+   MEMBER [TDSalesMsrDim1].[TDSalesMsrDim1].[avg(Sales , calculated_comm)] AS AVG(
+      {
+         DISTINCT(
+            {
+               [TDSalesMsrDim1].[TDSalesMsrDim1].[Sales], 
+               [TDSalesMsrDim1].[TDSalesMsrDim1].[calculated_comm]
+            })
+      }), SOLVE_ORDER = 2, FORMAT_STRING = '#,##0.00;(#,##0.00)' 
+   MEMBER [TDSalesMsrDim1].[TDSalesMsrDim1].[prof_sales_wcomms] AS [TDSalesMsrDim1].[TDSalesMsrDim1].[Sales]-[TDSalesMsrDim1].[TDSalesMsrDim1].[calculated_comm], SOLVE_ORDER = 3, FORMAT_STRING = '#,##0.00;(#,##0.00)' 
+SELECT 
+   {
+      GENERATE(
+         {
+            EXCEPT(
+               GENERATE(
+                  [TDSalesMsrDim1].[TDSalesMsrDim1].MEMBERS , 
+                  STRTOSET( CASE   WHEN 
+                     [TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER.PROPERTIES("MEMBER_NAME") = "Sales" THEN "{[TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER, [TDSalesMsrDim1].[TDSalesMsrDim1].[calculated_comm]}"  ELSE "{[TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER}" END ) , ALL) , 
+               {
+                  [TDSalesMsrDim1].[TDSalesMsrDim1].[Commission]
+               } , ALL)
+         }, 
+         {
+            StrToSet(CASE WHEN 
+               [TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER.PROPERTIES("MEMBER_NAME") = "calculated_comm" THEN "{[TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER, [TDSalesMsrDim1].[TDSalesMsrDim1].[avg(Sales , calculated_comm)], [TDSalesMsrDim1].[TDSalesMsrDim1].[prof_sales_wcomms]}" ELSE "{[TDSalesMsrDim1].[TDSalesMsrDim1].CURRENTMEMBER}" END)
+         }, ALL)
+   } ON 0, 
+   {
+      [TDTimeDim1].[TDTimeDim1].MEMBERS
+   } ON 1 
+FROM
+   [TCDCube1] 
+WHERE (
+   [TDSalesRepDim1].[TDSalesRepDim1].[Total Regions], 
+   [Sandboxes].[Sandboxes].[Base])
+
+--we can also create view instead of add new view
+TDView3
+
+copy the above MDX and edit it to remove member-prof_sales_wcomms
+save the view to database
+(if it asks to replace we can do that)
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
