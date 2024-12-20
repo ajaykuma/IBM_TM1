@@ -1,0 +1,10 @@
+IBM Planning Analytics
+-------------------
+https://www.ibm.com/docs/en/planning-analytics/2.0.0?topic=development-understanding-multi-dimensionality
+https://www.ibm.com/docs/en/planning-analytics/2.1.0?topic=workspace-model-in-planning-analytics
+
+https://docs.oracle.com/cd/E51367_01/financialsop_gs/FADAG/dinconc.html
+https://cubes.readthedocs.io/en/v1.0.1/recipes/hierarchy.html
+https://www.aramar.co.uk/feeders-in-ibm-planning-analytics/
+https://code.cubewise.com/open-source/tm1py/
+
