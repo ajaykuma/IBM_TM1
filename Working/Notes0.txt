@@ -1,0 +1,40 @@
+Creating a book
+------------
+Books can contain many different type of objects
+--cube views
+--visualizations
+--scorecards
+--dimension selectors
+--graphic widgets
+--videos
+--embedded links to web pages
+
+Menu > new > book
+Note** Books contain tab pages and a tab page can be renamed/new tabs can be created.
+we can add content to our books from planning analytic databases, Watson deployments, pinned visualizations,visualizations
+we create and widgets.
+
+click on widget>text and text icon will be added [add content and format as per need]
+we can now select database icon and selecting 24Retail's income statement ,we can add a cube view to the book.
+24Retail > cubes > right click on Income statement > add new view : adds a cube view to the book.
+Alternatively we can expand views and select from list of views > drag and drop 'Analysis'
+
+to add a visualization> select cube view and click on duplicate icon on top.
+now we can select two rows, and right click to keep.
+now we can change column selection from qy to m
+optionally we can swap rows and columns, by clicking on icon on top.
+
+Now let cube view be selected and click on exploration.
+say select : line and column
+
+we can click on fields from top right to see data being used.
+save the book
+in shared (visible to other analytics users)
+in personal (only to us)
+ 
+
+How to create a cube and load data
+-------------------
+
+To create a cube we combine existing dimensions.
+User ID being used must be -modeler or administrator role

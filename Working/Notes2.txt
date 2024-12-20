@@ -45,21 +45,7 @@ now we can view the chart.
 synchronization group : new book
 
 -----------------------------
-9# Dimension: TDProductDim1 > Products
-              TDCountriesDim1 > Countries
-              TDSampleMeasuresDim1 > Quantity (numeric),Months Introduced (string)
 
-use file quantitydata nd create cube..and check
-
-we need to create a subset (public)
-TD2023Dim1 > 2023 > roles into months
-
-now remove the level000 or create a subset using only months.
-
-now add this to your attributes for TDSampleMeasuresDim1
-
-
-subset:<dimname>:<levelname>
 
 
 

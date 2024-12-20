@@ -1,0 +1,81 @@
+
+--Creating a Picklist for an Element of a Dimension
+1. Subset
+2. Attribute
+
+9# Dimension: TDProductDim1 > will contain products > add root member : Products <consolidated>  > and add members using Products.csv file
+              TDCountriesDim1 > will contain countries > add root member Countries <consolidated>: and add members using Countries0.csv file
+              TDSampleMeasuresDim1 > Quantity (numeric),Months Introduced (string)
+
+
+use file Quantitydata.csv and create cube TCDCube2
+
+--add a new view and check
+
+Create a dimension (which will be our subset) > TD2023Dim1
+Start year: 2023
+End year: 2023
+Frequency : yearly
+
+in sets> create set > with only members selected on right ie just name of months (or remove 2023 entry)
+save it as SSet1 in shared.
+
+now add this to your attributes for TDSampleMeasuresDim1 
+--create attribute Picklist <string>
+at intersection of Months Introduced and Picklist > subset:TD2023Dim1:SSet1
+
+save or refresh the book
+
+Test in your view and it should allow you to add values only from the picklist
+
+--we can also create a static picklist with selected options
+in TDSampleMeasuresDim1 , add new member StaticChoices
+for Picklist attribute > static:opt1:opt2:op3:opt4
+
+To include a null value at the beginning or in the middle of a static pick list, use two consecutive colons in the pick list definition. For example, the code: static:value1:value2::value3:value4 results in a pick list with a null value between value2 and value3.
+
+To include a null value at the end of a static pick list, insert a colon without a following value at the end of the pick list definition. For example, static:value1:value2::value3:value4: results in a pick list with a null value that follows value4.
+
+--using a Dimension based picklist
+in TDSampleMeasuresDim1 , add new member Remarks
+for Picklist attribute > dimension:TDProductDim1
+------------------------
+10#
+testing and working with rules
+
+--choose a view on a cube .Say this cube uses a dimension TDTimeDim11
+  Click on menu next to selection (which comes from TDTimeDim11)
+  select set editor..
+  Right most icon shows MDX which we can use 
+  it initially shows..(based on selection)
+  
+  DRILLDOWNMEMBER(EXCEPT(DRILLDOWNMEMBER([TDTimeDim11].[TDTimeDim11].[level000].MEMBERS , {[TDTimeDim11].[TDTimeDim11].[2023]} , RECURSIVE) , 
+  {[TDTimeDim11].[TDTimeDim11].[2024]}) ,{[TDTimeDim11].[TDTimeDim11].[Q1 2023]})
+
+  edit it
+  [TDTimeDim11].[Q1 2023]
+
+  we can commit to check the result in our selection
+  we can save as - TSet1 (public) to be used later
+  
+  Later we can use this in Current set > selection > exiting sets > TSet1
+  which shows 
+  TM1SubsetToSet([TDTimeDim11].[TDTimeDim11] , "TSet1" , "public")
+
+  --lets use inbuilt function Descendants by appending Descendants and click on commit
+  DESCENDANTS(TM1SubsetToSet([TDTimeDim11].[TDTimeDim11] , "TSet1" , "public"))
+
+  save as TSet2
+  
+  --change it to see all entries
+  TM1SUBSETALL([TDTimeDim11])
+
+  OR
+  [TDTimeDim11].MEMBERS
+
+--selecting using a range
+  [TDTimeDim11].[Jan 2023] : [TDTimeDim11].[May 2023]
+
+
+
+ 
