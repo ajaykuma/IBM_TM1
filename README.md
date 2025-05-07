@@ -2,4 +2,4 @@
 
 Working with IBM Cognos TM1/ IBM Planning Analytics workspace and multidimensional data
 
->>>> Content is being reviewed & updated
+> 🚧 This repository is currently being refined and improved. Stay tuned!
